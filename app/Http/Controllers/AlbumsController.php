@@ -10,63 +10,56 @@ class AlbumsController extends Controller
 {
     //
     public function  index(Request $request) {
-        //return Album::all();
-        $sql = 'select * from albums where 1=1 order by id desc';
-        $where = [];
-        if($request->has('id')) {
-            $where['id'] = $request->get('id');
-            $sql .= " AND id =:id";
-        }
+        //$queryBuilder = DB::table('albums')->orderBy('id', 'desc');
+        $queryBuilder = Album::orderBy('id', 'desc');
+            if($request->has('id')) {
+                $queryBuilder->where('id',  $request['id'] );
+            }
         if($request->has('album_name')) {
-            $where['album_name'] = $request->get('album_name');
-            $sql .= " AND album_name like concat('%', :album_name, '%') ";
+            $queryBuilder->where('album_name', 'LIKE', '%'.$request['album_name'].'%');
         }
-
         $title = 'Albums';
-        $albums = DB::select($sql, $where);
+        $albums = $queryBuilder->get();
         return view('albums.albums', compact('title', 'albums'));
     }
 
     public function show($id) {
-        $sql = "select * from albums where id=:id";
-        return DB::select($sql, ['id'=>$id]);
+        return DB::table('albums')->where('id', $id)->get();
     }
 
     public function create() {
         return view('albums.create')->with('title', 'Insert New Album');
     }
 
-    public function save() {
-        $data = request()->only(['album_name','description']);
-        $data['user_id'] = 1;
-        $sql = "insert into albums (album_name, description, user_id)";
-        $sql .= " values (:album_name, :description, :user_id)";
-        $res = DB::insert($sql, $data);
-        $msg = $res ? 'Album name '.$data['album_name'].' Created' : 'Album '.$data['album_name'].' not created';
+    public function save(Request $req) {
+        $album = new Album();
+        $album->album_name = $req['album_name'];
+        $album->description = $req['description'];
+        $album->user_id = 1;
+        $res = $album->save();
+        $msg = $res ? 'Album name '.$req['album_name'].' Created' : 'Album '.$req['album_name'].' not created';
         session()->flash('msg', $msg);
         return redirect()->route('albums');
     }
 
     public  function edit($id) {
-        $sql = "select id, album_name, description from albums where id=:id";
         $title = "Edit Album";
-        $albums = DB::select($sql, ['id'=>$id]);
-        $album = $albums[0];
+        $album = Album::find($id);
         return view('albums.edit', compact('title', 'album'));
     }
 
     public function  store($id, Request $req) {
-        $data = request()->only(['album_name', 'description']);
-        $data['id'] = $id;
-        $sql = "update albums set album_name=:album_name, description=:description where id =:id";
-        $res = DB::update($sql, $data);
+        $album = Album::find($id);
+        $album->album_name = $req['album_name'];
+        $album->description = $req['description'];
+        $res = $album->save();
         $msg = $res ? 'Album id = '.$id.' Aggiornato' : 'Album non aggiornato';
         session()->flash('msg', $msg);
         return redirect()->route('albums');
     }
 
     public function delete($id) {
-        $sql = "delete from albums where id=:id";
-        return DB::delete($sql, ['id'=>$id]);
+        $res = Album::find($id)->delete();
+        return ''.$res;
     }
 }

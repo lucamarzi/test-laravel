@@ -28,6 +28,14 @@ Route::get('/albums/{id}/edit', 'AlbumsController@edit');
 Route::patch('/albums/{id}', 'AlbumsController@store');
 Route::delete('/albums/{id}', 'AlbumsController@delete');
 
+Route::get('usersnoalbums', function(){
+   return DB::table('users as u')
+       ->leftJoin('albums as a', 'a.user_id', 'u.id')
+       ->select('u.name','u.email', 'u.id')
+       ->whereNull('a.album_name')
+       ->get();
+});
+
 Route::get('/photos', function(){
     return Photo::all();
 });
