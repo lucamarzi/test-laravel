@@ -52,6 +52,11 @@ class AlbumsController extends Controller
         $album = Album::find($id);
         $album->album_name = $req['album_name'];
         $album->description = $req['description'];
+        if($req->hasFile('album_thumb')) {
+            $file = $req->file('album_thumb');
+            $filename = $file->store(env('ALBUM_THUMB_DIR'),'local');
+            $album->album_thumb = $filename;
+        }
         $res = $album->save();
         $msg = $res ? 'Album id = '.$id.' Aggiornato' : 'Album non aggiornato';
         session()->flash('msg', $msg);
