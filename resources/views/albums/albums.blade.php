@@ -15,9 +15,10 @@
             <li class="list-group-item d-flex justify-content-between">
                 {{$album->id}} - {{$album->album_name}}
                 @if($album->album_thumb)
-                    <img width="300" src="{{$album->album_thumb}}" alt="{{$album->album_name}}" title="{{$album->album_name}}">
+                    <img src="{{asset($album->path)}}" alt="{{$album->album_name}}" title="{{$album->album_name}}">
                 @endif
                 <div>
+                    @if($album->photos_count>0)<a href="/albums/{{$album->id}}/photos" class="btn btn-success">ViEW PHOTOS</a>@endif
                     <a href="/albums/{{$album->id}}/edit" class="btn btn-primary">UPDATE</a>
                     <a href="/albums/{{$album->id}}" class="btn btn-danger delete">DELETE</a>
                 </div>

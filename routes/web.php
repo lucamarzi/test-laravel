@@ -21,12 +21,14 @@ Route::get('/users', function(){
 });
 
 Route::get('/albums', 'AlbumsController@index')->name('albums');
-Route::get('/albums/{id}', 'AlbumsController@show')->where('id', '[0-9]+');
+Route::get('/albums/{album}', 'AlbumsController@show')->where('album', '[0-9]+');
 Route::get('/albums/create', 'AlbumsController@create')->name('create_album');
 Route::post('/albums', 'AlbumsController@save')->name('save_album');
-Route::get('/albums/{id}/edit', 'AlbumsController@edit');
+Route::get('/albums/{album}/edit', 'AlbumsController@edit');
 Route::patch('/albums/{id}', 'AlbumsController@store');
-Route::delete('/albums/{id}', 'AlbumsController@delete');
+Route::delete('/albums/{album}', 'AlbumsController@delete')->where('album', '[0-9]+');
+
+Route::get('/albums/{album}/photos', 'AlbumsController@getPhotos')->name('album_photos')->where('album', '[0-9]+');
 
 Route::get('usersnoalbums', function(){
    return DB::table('users as u')
@@ -36,9 +38,8 @@ Route::get('usersnoalbums', function(){
        ->get();
 });
 
-Route::get('/photos', function(){
-    return Photo::all();
-});
+Route::resource('photos', 'PhotosController');
+
 
 Route::get('/{name?}/{lastname?}/{age?}', 'WelcomeController@welcome')->where([
     'name' => '[a-zA-Z]+',

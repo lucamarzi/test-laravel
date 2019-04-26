@@ -9,15 +9,7 @@
             <label for="album_name">Album Name</label>
             <input type="text" class="form-control" name="album_name" id="album_name" placeholder="Album name" value="{{$album->album_name}}">
         </div>
-        <div class="form-group">
-            <label for="album_thumb">Album thumb</label>
-            <input type="file" class="form-control" name="album_thumb" id="album_thumb" placeholder="Album Thumb">
-        </div>
-        @if($album->album_thumb)
-        <div class="form-group">
-            <img src="{{$album->album_thumb}}" alt="{{$album->album_name}}" title="{{$album->album_name}}">
-        </div>
-        @endif
+        @include('albums.partials.fileupload')
         <div class="form-group">
             <label for="album_name">Description</label>
             <textarea class="form-control" name="description" id="description" placeholder="Description">{{$album->description}}</textarea>
